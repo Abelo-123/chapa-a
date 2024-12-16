@@ -15,7 +15,7 @@ export async function POST(req) {
 
         // Set up your Chapa live API key for production or sandbox key for testing
 
-        const response = await fetch('https://api.chapa.co/v1/charges', {
+        const response = await fetch('https://api.chapa.co/v1/hosted/pay', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
