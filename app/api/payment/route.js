@@ -18,8 +18,8 @@ export async function POST(request) {
                 first_name: firstName,
                 last_name: lastName,
                 tx_ref: `tx-${Date.now()}`, // Unique transaction reference
-                callback_url: 'http://localhost:3000/payment/success',
-                return_url: "https://google.com",
+                callback_url: 'https://chapa-a-lgec.vercel.app/payment/success',
+                return_url: "https://chapa-a-lgec.vercel.app/payment/success",
                 txRef: txRef, // Unique transaction reference
             },
             {
