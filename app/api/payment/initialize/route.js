@@ -14,14 +14,12 @@ export async function POST(req) {
         }
 
         // Set up your Chapa live API key for production or sandbox key for testing
-        const CHAPA_API_KEY = "CHASECK-rHLdqRzirQrjxbIFE2nypuyVemVhLJmn";
-        const paymentType = 'telebirr'; // Use 'web' for card payments or 'mobile' for mobile payments
 
         const response = await fetch('https://api.chapa.co/v1/charges', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${CHAPA_API_KEY}`,
+                'Authorization': `Bearer CHASECK-rHLdqRzirQrjxbIFE2nypuyVemVhLJmn`,
             },
             body: JSON.stringify({
                 amount: amount * 100, // Chapa expects amount in the smallest unit (like cents)
@@ -30,7 +28,7 @@ export async function POST(req) {
                 phone_number: phoneNumber,
                 callback_url: 'https://chapa-a-lgec.vercel.app/payment/success',
                 return_url: "https://chapa-a-lgec.vercel.app/payment/success",
-                payment_type: paymentType,
+                payment_type: 'telebirr',
                 // 
                 //  // Your cancel callback URL
             }),
