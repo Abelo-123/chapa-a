@@ -16,7 +16,7 @@ export async function POST(req) {
     };
 
     try {
-        const response = await axios.post('https://api.chapa.co/v1/charges', payload, {
+        const response = await axios.post('https://api.chapa.co/v1/hosted/pay', payload, {
             headers: {
                 'Content-Type': 'application/json',
             },

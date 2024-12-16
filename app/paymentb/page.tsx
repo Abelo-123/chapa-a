@@ -19,7 +19,7 @@ const PaymentButton = () => {
         };
 
         try {
-            const response = await axios.post('https://api.chapa.co/v1/hosted/pay', payload, {
+            const response = await axios.post('/api/payment/paymentb', payload, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
