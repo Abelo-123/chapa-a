@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 
 const PaymentSuccess = () => {
     const searchParams = useSearchParams();
-    const [status, setStatus] = useState(null);
+    const [status, setStatus] = useState<string | null>(null);
 
     useEffect(() => {
         const txRef = searchParams.get("tx_ref");

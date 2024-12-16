@@ -4,7 +4,7 @@ import axios from "axios";
 const CHAPA_SECRET_KEY = "CHASECK-rHLdqRzirQrjxbIFE2nypuyVemVhLJmn"
 
 export async function POST(request) {
-    const { amount, currency, email, firstName, lastName, callbackUrl } = await request.json();
+    const { amount, currency, email, firstName, lastName } = await request.json();
 
     try {
         const txRef = `txn_${Date.now()}`; // Generate unique transaction reference
