@@ -1,24 +1,21 @@
-// app/payment/page.js or app/payment/form/page.js
+// app/payment/initialize/page.js
+
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-export default function CustomPaymentForm() {
+const PaymentPage = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [amount, setAmount] = useState<string | number>('');
-    const [error, setError] = useState(null);
+    const [amount, setAmount] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [paymentUrl, setPaymentUrl] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // Validation checks for phone number and amount
-        if (!phoneNumber || !amount || isNaN(Number(amount))) {
-            setError('Please provide a valid phone number and amount.');
-            return;
-        }
+    const handlePayment = async () => {
+        setLoading(true);
+        setErrorMessage('');
 
         try {
-            // Call your API to initiate the payment process with Chapa
             const response = await fetch('/api/payment/initialize', {
                 method: 'POST',
                 headers: {
@@ -26,25 +23,25 @@ export default function CustomPaymentForm() {
                 },
                 body: JSON.stringify({ phoneNumber, amount }),
             });
-
             const data = await response.json();
 
-            if (response.ok) {
-                // Redirect to Chapa for payment after successful initiation
-                window.location.href = data.paymentUrl; // paymentUrl should come from your backend
+            if (data.paymentUrl) {
+                // Redirect the user to the payment URL
+                window.location.href = data.paymentUrl;
             } else {
-                setError(data.message || 'Something went wrong');
+                setErrorMessage(data.message || 'Something went wrong');
             }
-        } catch (err) {
-            console.error(err);
-            setError('An error occurred while processing your payment');
+        } catch (error) {
+            console.error(error);
+            setErrorMessage('Failed to initialize payment');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h1>Customized Payment Form</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div>
+            <h1>Initiate Payment</h1>
             <div>
                 <label htmlFor="phoneNumber">Phone Number:</label>
                 <input
@@ -52,20 +49,32 @@ export default function CustomPaymentForm() {
                     id="phoneNumber"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    required
+                    placeholder="Enter phone number"
                 />
             </div>
             <div>
-                <label htmlFor="amount">Amount:</label>
+                <label htmlFor="amount">Amount (ETB):</label>
                 <input
                     type="number"
                     id="amount"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    required
+                    placeholder="Enter amount"
                 />
             </div>
-            <button type="submit">Proceed to Payment</button>
-        </form>
+            <button onClick={handlePayment} disabled={loading}>
+                {loading ? 'Processing...' : 'Pay with Chapa'}
+            </button>
+
+            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+
+            {paymentUrl && (
+                <div>
+                    <p>Payment link generated: <a href={paymentUrl} target="_blank" rel="noopener noreferrer">Pay Now</a></p>
+                </div>
+            )}
+        </div>
     );
-}
+};
+
+export default PaymentPage;

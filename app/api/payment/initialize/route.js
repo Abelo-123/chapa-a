@@ -1,11 +1,11 @@
-// app/api/payment/initialize/route.js or app/api/payment/initialize.js
-
 import { NextResponse } from 'next/server';
 
 export async function POST(req) {
     try {
+        // Extract phone number and amount from the request body
         const { phoneNumber, amount } = await req.json();
 
+        // Validate the phone number and amount
         if (!phoneNumber || !amount || isNaN(amount)) {
             return NextResponse.json(
                 { message: 'Invalid phone number or amount' },
@@ -13,37 +13,44 @@ export async function POST(req) {
             );
         }
 
-        // Set up your Chapa live API key for production or sandbox key for testing
+        // Prepare the request payload
+        const requestBody = {
+            amount: amount, // Ensure amount is in the smallest unit (like cents)
+            currency: 'ETB',
+            email: 'mulukenzewude736@gmail.com',
+            phone_number: phoneNumber,
+            callback_url: 'https://chapa-a-lgec.vercel.app/payment/success',
+            return_url: 'https://chapa-a-lgec.vercel.app/payment/success',
+            payment_type: 'telebirr',
+            public_key: 'CHAPUBK-s9JQu74c7hAcdPPGxaAF6aT22Ih4HNtm' // Replace with your actual public key
+        };
+
+        // Send the request to Chapa API
         const response = await fetch('https://api.chapa.co/v1/hosted/pay', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer CHASECK-rHLdqRzirQrjxbIFE2nypuyVemVhLJmn`, // Replace with your actual live API key
+                'Authorization': `Bearer CHASECK-tEsVvjRLRHoyqavvY6DT4gRjie0Mg2Kc`, // Replace with your actual API key
             },
-            body: JSON.stringify({
-                amount: amount * 100, // Chapa expects amount in the smallest unit (like cents)
-                currency: 'ETB', // Set your preferred currency
-                email: 'abeloabate01@gmail.com', // Optional, but you can add user email if required
-                phone_number: phoneNumber,
-                callback_url: 'https://chapa-a-lgec.vercel.app/payment/success',
-                return_url: "https://chapa-a-lgec.vercel.app/payment/success",
-                payment_type: 'telebirr',
-            }),
+            body: JSON.stringify(requestBody),
         });
 
+        // Get the response data
         const data = await response.json();
 
-        console.log('Chapa API Response:', data); // Log the full response to inspect it
+        // Log the response data for debugging
+        console.log('Chapa API Response:', data);
 
+        // Check if the response is successful
         if (response.ok) {
             return NextResponse.json({ paymentUrl: data.payment_url });
         } else {
-            console.error('Chapa API Error:', data); // Log error details from Chapa API
+            // Handle the error response
             return NextResponse.json({ message: data.message || 'Something went wrong' }, { status: 500 });
         }
     } catch (error) {
+        // Log the error and return a generic error message
         console.error('Payment initialization error:', error);
         return NextResponse.json({ message: 'Failed to initialize payment' }, { status: 500 });
     }
 }
-
