@@ -8,7 +8,7 @@ const PaymentPage = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [amount, setAmount] = useState('');
     const [loading, setLoading] = useState(false);
-    const [paymentUrl, setPaymentUrl] = useState(null);
+    const [paymentUrl] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
 
     const handlePayment = async () => {
