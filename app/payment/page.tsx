@@ -1,55 +1,71 @@
-"use client";
+// app/payment/page.js or app/payment/form/page.js
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-const PaymentPage = () => {
-    const [loading, setLoading] = useState(false);
+export default function CustomPaymentForm() {
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [amount, setAmount] = useState<string | number>('');
+    const [error, setError] = useState(null);
 
-    const handlePayment = async () => {
-        setLoading(true);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Validation checks for phone number and amount
+        if (!phoneNumber || !amount || isNaN(Number(amount))) {
+            setError('Please provide a valid phone number and amount.');
+            return;
+        }
 
         try {
-
-            const response = await fetch("/api/payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    amount: 100, // Example amount
-                    currency: "ETB",
-                    email: "joeabate4@gmail.com",
-                    firstName: "joe",
-                    lastName: "abate",
-                    callbackUrl: "http://localhost:3000/payment/success", // Your success page
-
-                }),
+            // Call your API to initiate the payment process with Chapa
+            const response = await fetch('/api/payment/initialize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phoneNumber, amount }),
             });
 
             const data = await response.json();
 
-            if (data?.data?.checkout_url) {
-                // Redirect to Chapa's payment page
-                window.location.href = data.data.checkout_url;
+            if (response.ok) {
+                // Redirect to Chapa for payment after successful initiation
+                window.location.href = data.paymentUrl; // paymentUrl should come from your backend
             } else {
-                console.error("Payment initiation failed:", data.error);
+                setError(data.message || 'Something went wrong');
             }
-        } catch (error) {
-            console.error("Error during payment:", error);
-        } finally {
-            setLoading(false);
+        } catch (err) {
+            console.error(err);
+            setError('An error occurred while processing your payment');
         }
     };
 
     return (
-        <div>
-            <button
-                onClick={handlePayment}
-                disabled={loading}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-                {loading ? "Redirecting..." : "Pay with Chapa"}
-            </button>
-        </div>
+        <form onSubmit={handleSubmit}>
+            <h1>Customized Payment Form</h1>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            <div>
+                <label htmlFor="phoneNumber">Phone Number:</label>
+                <input
+                    type="text"
+                    id="phoneNumber"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                />
+            </div>
+            <div>
+                <label htmlFor="amount">Amount:</label>
+                <input
+                    type="number"
+                    id="amount"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    required
+                />
+            </div>
+            <button type="submit">Proceed to Payment</button>
+        </form>
     );
-};
-
-export default PaymentPage;
+}

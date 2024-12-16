@@ -1,42 +1,11 @@
-"use client";
+// app/payment/success/page.js
 
-import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-
-const PaymentSuccess = () => {
-    const searchParams = useSearchParams();
-    const [status, setStatus] = useState<string | null>(null);
-
-    useEffect(() => {
-        const txRef = searchParams.get("tx_ref");
-        const status = searchParams.get("status");
-
-        setStatus(status);
-
-        if (status === "success") {
-            console.log("Transaction successful:", txRef);
-            // Optionally, verify the payment with your backend.
-        } else {
-            console.error("Transaction failed or canceled:", status);
-        }
-    }, [searchParams]);
-
+export default function SuccessPage() {
     return (
-        <div className="p-4">
-            <h1 className="text-xl font-bold">
-                Payment {status === "success" ? "Successful" : "Failed"}
-            </h1>
-            {status === "success" && <p>Thank you for your payment!</p>}
+        <div>
+            <h1>Payment Successful!</h1>
+            <p>Your payment has been successfully processed.</p>
+            {/* Optionally, display any details here */}
         </div>
     );
-};
-
-const PaymentSuccessWithSuspense = () => {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <PaymentSuccess />
-        </Suspense>
-    );
-};
-
-export default PaymentSuccessWithSuspense;
+}
